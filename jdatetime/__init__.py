@@ -868,9 +868,6 @@ class datetime(date):
         jdatetime.date.fromgregorian(date=datetime.date)
         jdatetime.date.fromgregorian(datetime=datetime.datetime)
         """
-        print '--------------'
-        print kw
-
         if 'force_persian_output' in kw:
             force_persian_output = kw['force_persian_output']
         else:

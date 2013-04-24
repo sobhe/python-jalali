@@ -141,8 +141,14 @@ class date(object):
             return True
         return False
 
-    def __init__(self, year, month, day):
+    def __init__(self, year, month, day, force_persian_output=False):
         """date(year, month, day) --> date object"""
+        if force_persian_output:
+            self.j_months = self.j_months_fa
+            self.j_months_short = self.j_months_short_fa
+            self.j_weekdays = self.j_weekdays_fa
+            self.j_weekdays_short = self.j_weekdays_short_fa
+            self.j_ampm = self.j_ampm_fa
         if not (self._check_arg(year) and
                 self._check_arg(month) and
                 self._check_arg(day)):
@@ -195,16 +201,20 @@ class date(object):
         jdatetime.date.fromgregorian(day=X,month=X,year=X)
         jdatetime.date.fromgregorian(date=datetime.date)
         """
+        if 'force_persian_output' not in kw:
+            force_persian_output = False
+        else:
+            force_persian_output = True
         if 'date' in kw and type(kw['date']) == py_datetime.date:
             d = kw['date']
             (y, m, d) = GregorianToJalali(d.year,
                                           d.month,
                                           d.day).getJalaliList()
-            return date(y, m, d)
+            return date(y, m, d, force_persian_output=force_persian_output)
         if 'day' in kw and 'month' in kw and 'year' in kw:
             (year, month, day) = (kw['year'], kw['month'], kw['day'])
             (y, m, d) = GregorianToJalali(year, month, day).getJalaliList()
-            return date(y, m, d)
+            return date(y, m, d, force_persian_output=force_persian_output)
 
         error_msg = ["fromgregorian have to be be called"]
         error_msg += ["fromgregorian(day=X,month=X,year=X)"]
@@ -530,8 +540,8 @@ class datetime(date):
         """Return date object with same year, month and day."""
         return date(self.year, self.month, self.day)
 
-    def __init__(self,year, month, day, hour=None, minute=None, second=None, microsecond=None, tzinfo=None):
-        date.__init__(self, year, month, day)
+    def __init__(self,year, month, day, hour=None, minute=None, second=None, microsecond=None, tzinfo=None, force_persian_output=False):
+        date.__init__(self, year, month, day, force_persian_output)
         tmp_hour = 0
         tmp_min  = 0
         tmp_sec  = 0
@@ -858,14 +868,21 @@ class datetime(date):
         jdatetime.date.fromgregorian(date=datetime.date)
         jdatetime.date.fromgregorian(datetime=datetime.datetime)
         """
+        print '--------------'
+        print kw
+
+        if 'force_persian_output' in kw:
+            force_persian_output = kw['force_persian_output']
+        else:
+            force_persian_output = False
         if 'date' in kw  and type(kw['date']) == py_datetime.date:
             d = kw['date']
             (y, m, d) = GregorianToJalali(d.year, d.month, d.day).getJalaliList()
-            return datetime(y, m, d)
+            return datetime(y, m, d, force_persian_output=force_persian_output)
         if 'datetime' in kw  and type(kw['datetime']) == py_datetime.datetime:
             dt = kw['datetime']
             (y, m, d) = GregorianToJalali(dt.year, dt.month, dt.day).getJalaliList()
-            return datetime(y, m, d, dt.hour, dt.minute, dt.second, dt.microsecond, dt.tzinfo)
+            return datetime(y, m, d, dt.hour, dt.minute, dt.second, dt.microsecond, dt.tzinfo, force_persian_output=force_persian_output)
         if 'day' in kw and 'month' in kw and 'year' in kw:
             (year, month, day) = (kw['year'], kw['month'], kw['day'])
             (y, m, d) = GregorianToJalali(year, month, day).getJalaliList()
@@ -884,7 +901,7 @@ class datetime(date):
                             microsecond = kw['microsecond']
                             if 'tzinfo' in kw:
                                 tzinfo = kw['tzinfo']
-            return datetime(y, m, d, hour, minute, second, microsecond, tzinfo)
+            return datetime(y, m, d, hour, minute, second, microsecond, tzinfo, force_persian_output=force_persian_output)
 
         raise ValueError("fromgregorian have to called fromgregorian(day=X,month=X,year=X, [hour=X, [minute=X, [second=X, [tzinfo=X]]]]) or fromgregorian(date=datetime.date) or fromgregorian(datetime=datetime.datetime)")
 
